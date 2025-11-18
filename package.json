@@ -1,0 +1,28 @@
+{
+  "name": "crowdfunding-dapp",
+  "version": "1.0.0",
+  "description": "Crowdfunding dApp - Full-Stack Web3 Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "truffle test",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --network ganache",
+    "migrate:reset": "truffle migrate --network ganache --reset",
+    "console": "truffle console --network ganache"
+  },
+  "keywords": [
+    "blockchain",
+    "web3",
+    "crowdfunding",
+    "solidity"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "^2.1.0",
+    "truffle": "^5.11.0"
+  },
+  "dependencies": {
+    "web3": "^1.10.0"
+  }
+}
