@@ -4,7 +4,8 @@ import { ethers } from "ethers";
 import ABI from "./CrowdfundingABI.json";
 import "./App.css";
 
-const CONTRACT_ADDRESS = "0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164"; // Ganache deployment address
+//const CONTRACT_ADDRESS = "0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164"; // Ganache deployment address
+const CONTRACT_ADDRESS = "0x1FEe47b7BDE8b7a70c94842511DF1c86eAdF340C"; // Hardhat deployment address
 const GANACHE_CHAIN_ID = "0xaa36a7"; // Ganache chain ID (1337 in decimal)
 
 export default function App() {
