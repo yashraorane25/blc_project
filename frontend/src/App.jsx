@@ -1,71 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import ABI from './abi.json';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import ABI from "./abi.json";
+import "./App.css";
 
-const CONTRACT_ADDRESS = '0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164'; // Ganache deployment address
-const GANACHE_CHAIN_ID = '0xaa36a7'; // Ganache chain ID (1337 in decimal)
+const CONTRACT_ADDRESS = "0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164"; // Ganache deployment address
+const GANACHE_CHAIN_ID = "0xaa36a7"; // Ganache chain ID (1337 in decimal)
 
 export default function App() {
-  const [account, setAccount] = useState('');
+  const [account, setAccount] = useState("");
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
-  const [network, setNetwork] = useState('');
+  const [network, setNetwork] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [campaigns, setCampaigns] = useState([]);
 
   // Connect wallet
   const connectWallet = async () => {
     try {
       if (!window.ethereum) {
-        setMessage('❌ Please install MetaMask');
+        setMessage("❌ Please install MetaMask");
         return;
       }
 
-      console.log('🔍 Connecting wallet...');
+      console.log("🔍 Connecting wallet...");
 
       const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts',
+        method: "eth_requestAccounts",
       });
-      console.log('✅ Accounts fetched:', accounts);
+      console.log("✅ Accounts fetched:", accounts);
 
       const chainId = await window.ethereum.request({
-        method: 'eth_chainId',
+        method: "eth_chainId",
       });
-      console.log('🔗 Current Chain ID:', chainId, 'Expected Chain ID:', GANACHE_CHAIN_ID);
+      console.log(
+        "🔗 Current Chain ID:",
+        chainId,
+        "Expected Chain ID:",
+        GANACHE_CHAIN_ID
+      );
 
       if (chainId !== GANACHE_CHAIN_ID) {
-        console.error('❌ Network mismatch! Current:', chainId, 'Expected:', GANACHE_CHAIN_ID);
-        setMessage('⚠️ Please switch to the Ganache network (Chain ID: 1337)');
+        console.error(
+          "❌ Network mismatch! Current:",
+          chainId,
+          "Expected:",
+          GANACHE_CHAIN_ID
+        );
+        setMessage("⚠️ Please switch to the Ganache network (Chain ID: 1337)");
         return;
       }
 
       const newProvider = new ethers.BrowserProvider(window.ethereum);
       const signer = await newProvider.getSigner();
       const network = await newProvider.getNetwork();
-      console.log('📡 Network info:', network);
+      console.log("📡 Network info:", network);
 
       setAccount(accounts[0]);
       setProvider(newProvider);
       // Show a friendly name for local networks like Ganache
-      const networkName = network.name === 'unknown' ? 'Ganache (Local)' : network.name;
+      const networkName =
+        network.name === "unknown" ? "Ganache (Local)" : network.name;
       setNetwork(networkName);
 
       if (CONTRACT_ADDRESS) {
-        const newContract = new ethers.Contract(
-          CONTRACT_ADDRESS,
-          ABI,
-          signer
-        );
-        console.log('📝 Contract loaded:', CONTRACT_ADDRESS);
+        const newContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        console.log("📝 Contract loaded:", CONTRACT_ADDRESS);
         setContract(newContract);
       }
 
-      console.log('✅ Connected! Account:', accounts[0]);
-      setMessage(`✅ Connected: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`);
+      console.log("✅ Connected! Account:", accounts[0]);
+      setMessage(
+        `✅ Connected: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`
+      );
     } catch (error) {
-      console.error('❌ Connection failed:', error);
+      console.error("❌ Connection failed:", error);
       setMessage(`❌ Connection failed: ${error.message}`);
     }
   };
@@ -74,7 +83,7 @@ export default function App() {
   const createCampaign = async (e) => {
     e.preventDefault();
     if (!contract) {
-      setMessage('❌ Please connect your wallet first');
+      setMessage("❌ Please connect your wallet first");
       return;
     }
 
@@ -92,7 +101,7 @@ export default function App() {
         durationDays
       );
 
-      setMessage('⏳ Transaction pending...');
+      setMessage("⏳ Transaction pending...");
       const receipt = await tx.wait();
       setMessage(`✅ Campaign created! Tx hash: ${receipt.hash}`);
       e.target.reset();
@@ -107,30 +116,30 @@ export default function App() {
   // Contribute funds
   const contribute = async (campaignId, amount) => {
     if (!contract) {
-      setMessage('❌ Please connect your wallet first');
+      setMessage("❌ Please connect your wallet first");
       return;
     }
 
     try {
       setLoading(true);
-      console.log('💰 Contributing...');
-      console.log('Campaign ID:', campaignId, 'Amount:', amount, 'ETH');
-      
+      console.log("💰 Contributing...");
+      console.log("Campaign ID:", campaignId, "Amount:", amount, "ETH");
+
       const valueInWei = ethers.parseEther(amount);
-      console.log('Value in Wei:', valueInWei.toString());
-      
+      console.log("Value in Wei:", valueInWei.toString());
+
       const tx = await contract.contribute(campaignId, {
         value: valueInWei,
       });
-      console.log('📤 Transaction sent:', tx.hash);
+      console.log("📤 Transaction sent:", tx.hash);
 
-      setMessage('⏳ Transaction pending...');
+      setMessage("⏳ Transaction pending...");
       const receipt = await tx.wait();
-      console.log('✅ Transaction confirmed:', receipt);
+      console.log("✅ Transaction confirmed:", receipt);
       setMessage(`✅ Contribution successful! Tx hash: ${receipt.hash}`);
       loadCampaigns();
     } catch (error) {
-      console.error('❌ Contribution failed details:', error);
+      console.error("❌ Contribution failed details:", error);
       setMessage(`❌ Contribution failed: ${error.message}`);
     } finally {
       setLoading(false);
@@ -140,7 +149,7 @@ export default function App() {
   // Withdraw funds
   const withdrawFunds = async (campaignId) => {
     if (!contract) {
-      setMessage('❌ Please connect your wallet first');
+      setMessage("❌ Please connect your wallet first");
       return;
     }
 
@@ -148,7 +157,7 @@ export default function App() {
       setLoading(true);
       const tx = await contract.withdrawFunds(campaignId);
 
-      setMessage('⏳ Transaction pending...');
+      setMessage("⏳ Transaction pending...");
       const receipt = await tx.wait();
       setMessage(`✅ Withdrawal successful! Tx hash: ${receipt.hash}`);
       loadCampaigns();
@@ -162,21 +171,21 @@ export default function App() {
   // Load crowdfunding campaigns
   const loadCampaigns = async () => {
     if (!contract) {
-      console.log('⚠️ Contract not loaded');
+      console.log("⚠️ Contract not loaded");
       return;
     }
 
     try {
-      console.log('📂 Loading campaigns...');
+      console.log("📂 Loading campaigns...");
       const count = await contract.campaignCount();
-      console.log('📊 Campaign count:', count.toString());
+      console.log("📊 Campaign count:", count.toString());
       const campaignList = [];
 
       for (let i = 0; i < count; i++) {
         console.log(`📋 Loading campaign ${i}...`);
         const details = await contract.getCampaignDetails(i);
         console.log(`✅ Campaign ${i} details:`, details);
-        
+
         // Build typed object from returned array
         campaignList.push({
           id: i,
@@ -190,10 +199,10 @@ export default function App() {
         });
       }
 
-      console.log('✅ All campaigns loaded:', campaignList);
+      console.log("✅ All campaigns loaded:", campaignList);
       setCampaigns(campaignList);
     } catch (error) {
-      console.error('❌ Failed to load campaigns:', error);
+      console.error("❌ Failed to load campaigns:", error);
     }
   };
 
@@ -209,11 +218,11 @@ export default function App() {
         <h1>🚀 Crowdfunding dApp</h1>
         <button
           onClick={connectWallet}
-          className={`btn-connect ${account ? 'connected' : ''}`}
+          className={`btn-connect ${account ? "connected" : ""}`}
         >
           {account
             ? `${account.slice(0, 6)}...${account.slice(-4)}`
-            : 'Connect MetaMask'}
+            : "Connect MetaMask"}
         </button>
       </header>
 
@@ -256,7 +265,7 @@ export default function App() {
                 required
               />
               <button type="submit" disabled={loading}>
-                {loading ? 'Processing...' : 'Create campaign'}
+                {loading ? "Processing..." : "Create campaign"}
               </button>
             </form>
           </section>
@@ -273,19 +282,20 @@ export default function App() {
                     <p>{campaign.description}</p>
                     <div className="campaign-details">
                       <p>
-                        <strong>Creator:</strong> {campaign.creator.slice(0, 6)}...
+                        <strong>Creator:</strong> {campaign.creator.slice(0, 6)}
+                        ...
                         {campaign.creator.slice(-4)}
                       </p>
                       <p>
-                        <strong>Target:</strong>{' '}
+                        <strong>Target:</strong>{" "}
                         {ethers.formatEther(campaign.targetAmount)} ETH
                       </p>
                       <p>
-                        <strong>Raised:</strong>{' '}
+                        <strong>Raised:</strong>{" "}
                         {ethers.formatEther(campaign.amountRaised)} ETH
                       </p>
                       <p>
-                        <strong>Progress:</strong>{' '}
+                        <strong>Progress:</strong>{" "}
                         {(
                           (Number(campaign.amountRaised) /
                             Number(campaign.targetAmount)) *
@@ -294,14 +304,14 @@ export default function App() {
                         %
                       </p>
                       <p>
-                        <strong>Deadline:</strong>{' '}
+                        <strong>Deadline:</strong>{" "}
                         {new Date(
                           Number(campaign.deadline) * 1000
                         ).toLocaleString()}
                       </p>
                       <p>
-                        <strong>Status:</strong>{' '}
-                        {campaign.withdrawn ? '✅ Withdrawn' : '⏳ In progress'}
+                        <strong>Status:</strong>{" "}
+                        {campaign.withdrawn ? "✅ Withdrawn" : "⏳ In progress"}
                       </p>
                     </div>
                     <div className="campaign-actions">
