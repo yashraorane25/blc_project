@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import ABI from "./abi.json";
+//import ABI from "./abi.json";
+import ABI from "./CrowdfundingABI.json";
 import "./App.css";
 
 const CONTRACT_ADDRESS = "0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164"; // Ganache deployment address
