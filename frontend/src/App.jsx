@@ -7,7 +7,6 @@ import "./App.css";
 //const CONTRACT_ADDRESS = "0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164"; // Ganache deployment address
 
 const CONTRACT_ADDRESS = "0x1FEe47b7BDE8b7a70c94842511DF1c86eAdF340C"; // Hardhat deployment address
-//const GANACHE_CHAIN_ID = "0xaa36a7"; // Ganache chain ID (1337 in decimal)
 const SEPOLIA_CHAIN_ID = "0xaa36a7"; // Sepolia chain ID (11155111)
 
 export default function App() {
@@ -41,15 +40,15 @@ export default function App() {
         "🔗 Current Chain ID:",
         chainId,
         "Expected Chain ID:",
-        GANACHE_CHAIN_ID
+        SEPOLIA_CHAIN_ID
       );
 
-      if (chainId !== GANACHE_CHAIN_ID) {
+      if (chainId !== SEPOLIA_CHAIN_ID) {
         console.error(
           "❌ Network mismatch! Current:",
           chainId,
           "Expected:",
-          GANACHE_CHAIN_ID
+          SEPOLIA_CHAIN_ID
         );
         //setMessage("⚠️ Please switch to the Ganache network (Chain ID: 1337)");
         setMessage(
