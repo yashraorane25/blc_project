@@ -7,7 +7,15 @@ import "./App.css";
 //const CONTRACT_ADDRESS = "0x6a9A28F351D884e57Bc55AdBF947b1a34f15c164"; // Ganache deployment address
 
 const CONTRACT_ADDRESS = "0x1FEe47b7BDE8b7a70c94842511DF1c86eAdF340C"; // Hardhat deployment address
-const SEPOLIA_CHAIN_ID = "0xaa36a7"; // Sepolia chain ID (11155111)
+const SEPOLIA_CHAIN_ID = 11155111; // Sepolia chain ID (decimal)
+
+const normalizeChainId = (id) => {
+  if (typeof id === "number") return id;
+  if (typeof id === "string") {
+    return parseInt(id, id.startsWith("0x") ? 16 : 10);
+  }
+  return Number(id);
+};
 
 export default function App() {
   const [account, setAccount] = useState("");
@@ -33,9 +41,10 @@ export default function App() {
       });
       console.log("✅ Accounts fetched:", accounts);
 
-      const chainId = await window.ethereum.request({
+      const rawChainId = await window.ethereum.request({
         method: "eth_chainId",
       });
+      const chainId = normalizeChainId(rawChainId);
       console.log(
         "🔗 Current Chain ID:",
         chainId,
