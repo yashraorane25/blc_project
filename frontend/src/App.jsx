@@ -155,8 +155,28 @@ export default function App() {
       setMessage(`✅ Contribution successful! Tx hash: ${receipt.hash}`);
       loadCampaigns();
     } catch (error) {
+      // console.error("❌ Contribution failed details:", error);
+      // setMessage(`❌ Contribution failed: ${error.message}`);
       console.error("❌ Contribution failed details:", error);
-      setMessage(`❌ Contribution failed: ${error.message}`);
+
+      if (
+        error.code === "INSUFFICIENT_FUNDS" ||
+        error.message?.includes("insufficient funds")
+      ) {
+        setMessage(
+          "❌ Contribution failed: You do not have enough ETH to cover the amount and gas fees."
+        );
+      } else if (error.message?.includes("Campaign has ended")) {
+        setMessage("❌ Contribution failed: This campaign has already ended.");
+      } else if (error.message?.includes("greater than 0")) {
+        setMessage(
+          "❌ Contribution failed: Contribution amount must be greater than zero."
+        );
+      } else {
+        setMessage(
+          "❌ Contribution failed: Transaction could not be processed. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
