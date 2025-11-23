@@ -325,9 +325,18 @@ export default function App() {
                           Number(campaign.deadline) * 1000
                         ).toLocaleString()}
                       </p>
-                      <p>
+                      {/* <p>
                         <strong>Status:</strong>{" "}
                         {campaign.withdrawn ? "✅ Withdrawn" : "⏳ In progress"}
+                      </p> */}
+                      <p>
+                        <strong>Status:</strong>{" "}
+                        {campaign.withdrawn
+                          ? "✅ Withdrawn"
+                          : Number(campaign.amountRaised) >=
+                            Number(campaign.targetAmount)
+                          ? "🎉 Completed"
+                          : "⏳ In progress"}
                       </p>
                     </div>
                     <div className="campaign-actions">
@@ -349,7 +358,7 @@ export default function App() {
                       >
                         Contribute
                       </button>
-                      {campaign.creator === account && !campaign.withdrawn && (
+                      {/* {campaign.creator === account && !campaign.withdrawn && (
                         <button
                           onClick={() => withdrawFunds(campaign.id)}
                           disabled={loading}
@@ -357,7 +366,20 @@ export default function App() {
                         >
                           Withdraw
                         </button>
-                      )}
+                      )} */}
+                      {campaign.creator.toLowerCase() ===
+                        account.toLowerCase() &&
+                        !campaign.withdrawn &&
+                        Number(campaign.amountRaised) >=
+                          Number(campaign.targetAmount) && (
+                          <button
+                            onClick={() => withdrawFunds(campaign.id)}
+                            disabled={loading}
+                            className="btn-withdraw"
+                          >
+                            Withdraw
+                          </button>
+                        )}
                     </div>
                   </div>
                 ))}
